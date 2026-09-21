@@ -2,7 +2,11 @@ import Link from "next/link";
 
 export default function BrandingPage() {
   return (
-    <main className="w-full pt-20 bg-primary min-h-screen"><div className="flex flex-col w-full">
+    <main className="w-full pt-20 bg-primary min-h-screen">
+      <Link href="/" className="fixed top-6 left-6 md:top-10 md:left-10 z-50 px-4 py-2 bg-white text-black font-label-mono text-label-mono uppercase tracking-wider hover:bg-[#eeeeed] transition-colors shadow-[5px_5px_15px_rgba(0,0,0,0.5)]">
+        ← Retour
+      </Link>
+      <div className="flex flex-col w-full">
 <div className="w-full px-margin-mobile md:px-margin pt-space-xl pb-space-lg flex flex-col gap-space-md">
 <div className="flex items-center gap-space-sm">
 <span className="w-2 h-2 bg-on-primary"></span>
