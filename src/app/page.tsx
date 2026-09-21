@@ -311,7 +311,7 @@ export default function Home() {
             }}
             src="/logos/Logo-Black.png" 
             alt="Vulcan Logo" 
-            className="h-20 sm:h-24 md:h-40 w-auto object-contain shrink-0" 
+            className="h-16 sm:h-24 md:h-40 w-auto object-contain shrink-0" 
           />
           <motion.div 
             layout
@@ -326,8 +326,8 @@ export default function Home() {
             className="flex flex-col justify-center shrink-0 overflow-hidden"
           >
             <div className="w-max flex flex-col justify-center items-center text-center mb-2 md:mb-6">
-              <span className="text-[28px] sm:text-[40px] md:text-7xl font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none">Vulcan International</span>
-              <span className="text-[12px] sm:text-[16px] md:text-[20px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.2em] uppercase text-gray-800 mt-1 md:mt-2 leading-none">General Trading Group</span>
+              <span className="text-[18px] sm:text-[42px] md:text-[60px] font-[family-name:var(--font-cormorant)] font-bold italic tracking-normal leading-none uppercase">Vulcan International</span>
+              <span className="text-[13px] sm:text-[30px] md:text-[40px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.05em] text-gray-800 mt-1 md:mt-2 leading-none">General Trading Group</span>
             </div>
           </motion.div>
         </motion.div>
@@ -339,7 +339,7 @@ export default function Home() {
             y: appState === "center-text" ? 0 : 10 
           }}
           transition={{ duration: 1.2, ease: "easeOut" }}
-          className="max-w-4xl text-center mt-6 md:mt-12 text-[#5f5e5e] text-[11px] sm:text-xs md:text-base leading-relaxed tracking-wide pointer-events-none px-2"
+          className="max-w-4xl text-center mt-0 sm:mt-6 md:mt-12 text-[#5f5e5e] text-[10px] sm:text-xs md:text-base leading-relaxed tracking-wide pointer-events-none px-2"
         >
           Vulcan, named after the Roman god of craftsmanship, fire and creation, was founded in 2017 with a vision to build and shape brands, spaces and businesses with a distinctly international perspective.<br/><br/>
           Today, Vulcan operates as a holding company comprising three specialized entities: Vulcan Brand House, Vulcan Architecture, and Vulcan Motors — connecting brand, space and commerce through a refined, integrated approach.<br/><br/>
@@ -350,7 +350,7 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: appState !== "center-no-text" ? 1 : 0 }}
           transition={{ duration: 1 }}
-          className="absolute bottom-12 flex flex-col items-center gap-3 pointer-events-none"
+          className="absolute bottom-4 sm:bottom-12 flex flex-col items-center gap-3 pointer-events-none"
         >
           <span className="font-label-mono text-label-mono text-[#a1a1aa] uppercase tracking-widest text-[10px]">Scroll to explore</span>
           <div className="w-[1px] h-16 bg-gray-300 relative overflow-hidden">
@@ -377,19 +377,23 @@ export default function Home() {
       </motion.div>
 
       {/* Frames appear in sequence AFTER the logos have moved */}
-      <div className="flex items-center justify-center gap-2 sm:gap-4 mt-12 sm:mt-24 mb-4" style={{ perspective: 1500 }}>
+      <div className="flex items-center justify-center gap-2 sm:gap-4 mt-6 sm:mt-12" style={{ perspective: 1500 }}>
         <TiltCard 
           onClick={() => handleCardClick(1, '/branding')}
           isActive={activeCard === 1}
           initial={{ opacity: 0, scale: 0.95, boxShadow: shadowSide }} 
           animate={{ opacity: 1, scale: 1, boxShadow: shadowSide }} 
           transition={{ duration: 1, delay: 1.2 }}
-          className="group w-[28vw] sm:w-36 md:w-52 h-[300px] sm:h-[400px] md:h-[560px] bg-gradient-to-t from-[#0b0b0b]/10 to-[#f4f5f7]/80 to-[40%] rounded-sm backdrop-blur-md"
+          className="group w-[26vw] sm:w-32 md:w-48 h-[400px] sm:h-[350px] md:h-[480px] bg-[#f4f5f7]/40 rounded-sm backdrop-blur-md"
         >
-          <img src="/logos/Logo-Black.png" alt="Vulcan Logo" className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-2" />
+          <div className="absolute inset-x-0 bottom-0 h-[60%] -z-10 pointer-events-none">
+            <img src="/images/Left.png" alt="" className="w-full h-full object-cover object-bottom" />
+            <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-[#f4f5f7]" />
+          </div>
+          <img src="/logos/Logo-Black.png" alt="Vulcan Logo" className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-0" />
           <div className="flex flex-col items-center mb-1 sm:mb-2 text-center">
-            <span className="text-[13px] sm:text-[20px] md:text-3xl font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide">Vulcan Brand House</span>
-            <span className="text-[7px] sm:text-[9px] md:text-[11px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] uppercase text-gray-800 mt-1">Branding & Identity</span>
+            <span className="text-[7px] sm:text-[10px] md:text-[13px] lg:text-[16px] font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none whitespace-nowrap uppercase">Vulcan Brand House</span>
+            <span className="text-[6px] sm:text-[8px] md:text-[10px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] text-gray-800 mt-0.5 leading-none">Branding & Identity</span>
           </div>
           <RainText 
             text="A global brand house shaping every touchpoint of a brand — making all audience experiences from strategy and identity to environments, packaging and people. With more than 200 projects across more than 10 countries, we build distinctive brands designed to exist beyond borders."
@@ -402,12 +406,16 @@ export default function Home() {
           initial={{ opacity: 0, scale: 0.95, boxShadow: shadowCenter }} 
           animate={{ opacity: 1, scale: 1, boxShadow: shadowCenter }} 
           transition={{ duration: 1, delay: 1.5 }}
-          className="group w-[30vw] sm:w-36 md:w-52 h-[380px] sm:h-[520px] md:h-[720px] bg-gradient-to-t from-[#f6f6f4]/50 to-[#f4f5f7]/80 to-[40%] rounded-sm z-10 backdrop-blur-md"
+          className="group w-[28vw] sm:w-32 md:w-48 h-[480px] sm:h-[460px] md:h-[620px] bg-[#f4f5f7]/40 rounded-sm z-10 backdrop-blur-md"
         >
-          <img src="/logos/Logo-Black.png" alt="Vulcan Logo" className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-2" />
+          <div className="absolute inset-x-0 bottom-0 h-[60%] -z-10 pointer-events-none">
+            <img src="/images/Center.png" alt="" className="w-full h-full object-cover object-bottom" />
+            <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-[#f4f5f7]" />
+          </div>
+          <img src="/logos/Logo-Black.png" alt="Vulcan Logo" className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-0 mt-[40px] sm:mt-[55px] md:mt-[70px]" />
           <div className="flex flex-col items-center mb-1 sm:mb-2 text-center">
-            <span className="text-[13px] sm:text-[20px] md:text-3xl font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide">Vulcan Architecture</span>
-            <span className="text-[7px] sm:text-[9px] md:text-[11px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] uppercase text-gray-800 mt-1">Architecture Studio</span>
+            <span className="text-[7px] sm:text-[10px] md:text-[13px] lg:text-[16px] font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none whitespace-nowrap uppercase">Vulcan Architecture</span>
+            <span className="text-[6px] sm:text-[8px] md:text-[10px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] text-gray-800 mt-0.5 leading-none">Architecture Studio</span>
           </div>
           <RainText 
             text="An architecture and design studio creating spaces that extend and complete the identity of a brand. From commercial and corporate environments to residential and hospitality projects, we bring architecture and experience into one language."
@@ -420,12 +428,16 @@ export default function Home() {
           initial={{ opacity: 0, scale: 0.95, boxShadow: shadowSide }} 
           animate={{ opacity: 1, scale: 1, boxShadow: shadowSide }} 
           transition={{ duration: 1, delay: 1.8 }}
-          className="group w-[28vw] sm:w-36 md:w-52 h-[300px] sm:h-[400px] md:h-[560px] bg-gradient-to-t from-[#6e0820]/15 to-[#f4f5f7]/80 to-[40%] rounded-sm backdrop-blur-md"
+          className="group w-[26vw] sm:w-32 md:w-48 h-[400px] sm:h-[350px] md:h-[480px] bg-[#f4f5f7]/40 rounded-sm backdrop-blur-md"
         >
-          <img src="/logos/Logo-Black.png" alt="Vulcan Logo" className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-2" />
+          <div className="absolute inset-x-0 bottom-0 h-[60%] -z-10 pointer-events-none">
+            <img src="/images/Right.png" alt="" className="w-full h-full object-cover object-bottom" />
+            <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-[#f4f5f7]" />
+          </div>
+          <img src="/logos/Logo-Black.png" alt="Vulcan Logo" className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-0" />
           <div className="flex flex-col items-center mb-1 sm:mb-2 text-center">
-            <span className="text-[13px] sm:text-[20px] md:text-3xl font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide">Vulcan Motors</span>
-            <span className="text-[7px] sm:text-[9px] md:text-[11px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] uppercase text-gray-800 mt-1">Automobile Import & Trading</span>
+            <span className="text-[7px] sm:text-[10px] md:text-[13px] lg:text-[16px] font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none whitespace-nowrap uppercase">Vulcan Motors</span>
+            <span className="text-[6px] sm:text-[8px] md:text-[10px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] text-gray-800 mt-0.5 leading-none">Automobile Import & Trading</span>
           </div>
           <RainText 
             text="An automotive trading company connecting all around the World to Iran through the sourcing and export of vehicles and automotive parts. We provide a focused, reliable bridge between selected markets and the automotive industry."
@@ -438,13 +450,13 @@ export default function Home() {
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
         transition={{ duration: 0.8, delay: 1 }}
-        className="w-16 h-[2px] bg-black mb-4 mt-4"
+        className="w-16 h-[2px] bg-black mt-10 md:mt-24 mb-6"
       ></motion.div>
 
       <motion.div 
         layoutId="logo-container"
         transition={logoTransition}
-        className="flex items-center justify-center gap-2 mb-4"
+        className="flex items-center justify-center gap-2 mb-2 sm:mb-4"
       >
         <motion.img 
           layoutId="logo-icon" 
@@ -458,8 +470,8 @@ export default function Home() {
           transition={logoTransition}
           className="flex flex-col justify-center items-center text-center shrink-0 mb-1 md:mb-2"
         >
-          <span className="text-[14px] sm:text-[20px] md:text-2xl font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none">Vulcan International</span>
-          <span className="text-[7px] sm:text-[10px] md:text-[12px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.2em] uppercase text-gray-800 mt-1 leading-none">General Trading Group</span>
+          <span className="text-[16px] sm:text-[24px] md:text-[32px] font-[family-name:var(--font-cormorant)] font-bold italic tracking-normal leading-none uppercase">Vulcan International</span>
+          <span className="text-[12px] sm:text-[18px] md:text-[22px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.05em] text-gray-800 mt-1 leading-none">General Trading Group</span>
         </motion.div>
       </motion.div>
 
