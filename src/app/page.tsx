@@ -296,7 +296,7 @@ export default function Home() {
           layout
           layoutId="logo-container"
           transition={logoTransition}
-          className="flex items-center justify-center gap-4 md:gap-8 w-full max-w-full px-4 h-32"
+          className="flex items-center justify-center gap-2 md:gap-4 w-full max-w-full px-4 h-32"
         >
           <motion.img 
             layout
@@ -311,7 +311,7 @@ export default function Home() {
             }}
             src="/logos/Logo-Black.png" 
             alt="Vulcan Logo" 
-            className="h-16 sm:h-20 md:h-32 w-auto object-contain shrink-0" 
+            className="h-20 sm:h-24 md:h-40 w-auto object-contain shrink-0" 
           />
           <motion.div 
             layout
@@ -325,9 +325,9 @@ export default function Home() {
             transition={{ duration: 1.2, ease: "easeInOut" }}
             className="flex flex-col justify-center shrink-0 overflow-hidden"
           >
-            <div className="w-max flex flex-col justify-center pl-2 md:pl-4">
-              <span className="text-[20px] sm:text-[28px] md:text-5xl font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none">Vulcan International</span>
-              <span className="text-[10px] sm:text-[13px] md:text-[16px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.2em] uppercase text-gray-800 mt-1 md:mt-2 leading-none">General Trading Group</span>
+            <div className="w-max flex flex-col justify-center items-center text-center mb-2 md:mb-6">
+              <span className="text-[28px] sm:text-[40px] md:text-7xl font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none">Vulcan International</span>
+              <span className="text-[12px] sm:text-[16px] md:text-[20px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.2em] uppercase text-gray-800 mt-1 md:mt-2 leading-none">General Trading Group</span>
             </div>
           </motion.div>
         </motion.div>
@@ -348,7 +348,7 @@ export default function Home() {
 
         <motion.div 
           initial={{ opacity: 0 }}
-          animate={{ opacity: appState === "center-text" ? 1 : 0 }}
+          animate={{ opacity: appState !== "center-no-text" ? 1 : 0 }}
           transition={{ duration: 1 }}
           className="absolute bottom-12 flex flex-col items-center gap-3 pointer-events-none"
         >
@@ -444,22 +444,22 @@ export default function Home() {
       <motion.div 
         layoutId="logo-container"
         transition={logoTransition}
-        className="flex items-center justify-center gap-4 mb-4"
+        className="flex items-center justify-center gap-2 mb-4"
       >
         <motion.img 
           layoutId="logo-icon" 
           transition={logoTransition}
           src="/logos/Logo-Black.png" 
           alt="Vulcan Logo" 
-          className="h-10 sm:h-16 md:h-20 w-auto object-contain" 
+          className="h-10 sm:h-14 md:h-16 w-auto object-contain" 
         />
         <motion.div 
           layoutId="logo-text" 
           transition={logoTransition}
-          className="flex flex-col justify-center shrink-0"
+          className="flex flex-col justify-center items-center text-center shrink-0 mb-1 md:mb-2"
         >
-          <span className="text-[12px] sm:text-[18px] md:text-3xl font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none">Vulcan International</span>
-          <span className="text-[6px] sm:text-[9px] md:text-[11px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.2em] uppercase text-gray-800 mt-1 leading-none">General Trading Group</span>
+          <span className="text-[14px] sm:text-[20px] md:text-2xl font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none">Vulcan International</span>
+          <span className="text-[7px] sm:text-[10px] md:text-[12px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.2em] uppercase text-gray-800 mt-1 leading-none">General Trading Group</span>
         </motion.div>
       </motion.div>
 
