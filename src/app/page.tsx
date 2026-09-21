@@ -183,12 +183,7 @@ export default function Home() {
 
     Promise.all([preloadPromise, timerPromise]).then(() => {
       if (!isMounted) return;
-      setAppState("center");
-      
-      // 2. After another 2s, show text
-      setTimeout(() => {
-        if (isMounted) setAppState("center-text");
-      }, 2000);
+      setAppState("center-icon");
     });
 
     return () => {
@@ -197,24 +192,67 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const handleUserScroll = () => {
-      if (appState === "center-text") {
+    let isThrottled = false;
+    let scrollAccumulator = 0;
+    const SCROLL_THRESHOLD = 350; // Require 350px of scrolling to trigger the next step
+
+    let touchStartY = 0;
+
+    const advanceState = () => {
+      if (appState === "center-icon") {
+        setAppState("center");
+        setTimeout(() => { isThrottled = false; }, 2500); // 2.5s cooldown
+      } else if (appState === "center") {
+        setAppState("center-text");
+        setTimeout(() => { isThrottled = false; }, 3000); // 3s cooldown to let text settle
+      } else if (appState === "center-text") {
         setAppState("center-no-text");
         setTimeout(() => {
           setAppState("full");
           sessionStorage.setItem("vulcan_intro_played", "true");
-        }, 800);
+        }, 1500); // Wait 1.5s for text to fully fade out before moving to full
       }
     };
 
-    if (appState === "center-text") {
-      window.addEventListener("wheel", handleUserScroll);
-      window.addEventListener("touchmove", handleUserScroll);
+    const handleWheel = (e: WheelEvent) => {
+      if (isThrottled) return;
+      scrollAccumulator += e.deltaY;
+      
+      if (scrollAccumulator > SCROLL_THRESHOLD) {
+        isThrottled = true;
+        scrollAccumulator = 0;
+        advanceState();
+      } else if (scrollAccumulator < 0) {
+        scrollAccumulator = 0; // Prevent scrolling up from building a negative debt
+      }
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (isThrottled) return;
+      const touchY = e.touches[0].clientY;
+      const delta = touchStartY - touchY; // Positive delta means scrolling down
+      
+      if (delta > SCROLL_THRESHOLD) {
+        isThrottled = true;
+        touchStartY = touchY; // Reset for next interaction if needed
+        advanceState();
+      }
+    };
+
+    if (appState === "center-icon" || appState === "center" || appState === "center-text") {
+      window.addEventListener("wheel", handleWheel, { passive: true });
+      window.addEventListener("touchstart", handleTouchStart, { passive: true });
+      window.addEventListener("touchmove", handleTouchMove, { passive: true });
     }
 
     return () => {
-      window.removeEventListener("wheel", handleUserScroll);
-      window.removeEventListener("touchmove", handleUserScroll);
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
     };
   }, [appState]);
 
@@ -255,24 +293,43 @@ export default function Home() {
     return (
       <main className="w-full min-h-screen bg-[#f4f5f7] text-black flex flex-col items-center justify-center font-sans overflow-hidden px-6 relative">
         <motion.div 
+          layout
           layoutId="logo-container"
           transition={logoTransition}
-          className="flex items-center justify-center gap-4 md:gap-8 w-full max-w-full px-4"
+          className="flex items-center justify-center gap-4 md:gap-8 w-full max-w-full px-4 h-32"
         >
           <motion.img 
+            layout
             layoutId="logo-icon" 
-            transition={logoTransition}
+            initial={{ opacity: 0, scale: 0.8, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+            transition={{
+              layout: logoTransition,
+              opacity: { duration: 1.2, ease: "easeOut" },
+              scale: { duration: 1.2, ease: "easeOut" },
+              filter: { duration: 1.2, ease: "easeOut" }
+            }}
             src="/logos/Logo-Black.png" 
             alt="Vulcan Logo" 
             className="h-16 sm:h-20 md:h-32 w-auto object-contain shrink-0" 
           />
-          <motion.img 
+          <motion.div 
+            layout
             layoutId="logo-text" 
-            transition={logoTransition}
-            src="/logos/Name-General-Black.png" 
-            alt="Vulcan International" 
-            className="h-10 sm:h-12 md:h-24 w-auto object-contain shrink-0" 
-          />
+            initial={false}
+            animate={{ 
+              width: appState === "center-icon" ? 0 : "auto", 
+              opacity: appState === "center-icon" ? 0 : 1,
+              filter: appState === "center-icon" ? 'blur(10px)' : 'blur(0px)'
+            }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+            className="flex flex-col justify-center shrink-0 overflow-hidden"
+          >
+            <div className="w-max flex flex-col justify-center pl-2 md:pl-4">
+              <span className="text-[20px] sm:text-[28px] md:text-5xl font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none">Vulcan International</span>
+              <span className="text-[10px] sm:text-[13px] md:text-[16px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.2em] uppercase text-gray-800 mt-1 md:mt-2 leading-none">General Trading Group</span>
+            </div>
+          </motion.div>
         </motion.div>
 
         <motion.p
@@ -281,7 +338,7 @@ export default function Home() {
             opacity: appState === "center-text" ? 1 : 0, 
             y: appState === "center-text" ? 0 : 10 
           }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
           className="max-w-4xl text-center mt-6 md:mt-12 text-[#5f5e5e] text-[11px] sm:text-xs md:text-base leading-relaxed tracking-wide pointer-events-none px-2"
         >
           Vulcan, named after the Roman god of craftsmanship, fire and creation, was founded in 2017 with a vision to build and shape brands, spaces and businesses with a distinctly international perspective.<br/><br/>
@@ -329,8 +386,11 @@ export default function Home() {
           transition={{ duration: 1, delay: 1.2 }}
           className="group w-[28vw] sm:w-36 md:w-52 h-[300px] sm:h-[400px] md:h-[560px] bg-gradient-to-t from-[#0b0b0b]/10 to-[#f4f5f7]/80 to-[40%] rounded-sm backdrop-blur-md"
         >
-          <img src="/logos/Logo-Black.png" alt="Vulcan Logo" className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80" />
-          <img src="/logos/Name-Brand-Black.png" alt="Brand" className="h-3.5 sm:h-5 md:h-6 w-auto object-contain opacity-80 mb-1 sm:mb-2" />
+          <img src="/logos/Logo-Black.png" alt="Vulcan Logo" className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-2" />
+          <div className="flex flex-col items-center mb-1 sm:mb-2 text-center">
+            <span className="text-[13px] sm:text-[20px] md:text-3xl font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide">Vulcan Brand House</span>
+            <span className="text-[7px] sm:text-[9px] md:text-[11px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] uppercase text-gray-800 mt-1">Branding & Identity</span>
+          </div>
           <RainText 
             text="A global brand house shaping every touchpoint of a brand — making all audience experiences from strategy and identity to environments, packaging and people. With more than 200 projects across more than 10 countries, we build distinctive brands designed to exist beyond borders."
             className="text-[8px] sm:text-[10px] md:text-xs text-[#5f5e5e] font-body-sm leading-relaxed mt-1 sm:mt-2"
@@ -344,8 +404,11 @@ export default function Home() {
           transition={{ duration: 1, delay: 1.5 }}
           className="group w-[30vw] sm:w-36 md:w-52 h-[380px] sm:h-[520px] md:h-[720px] bg-gradient-to-t from-[#f6f6f4]/50 to-[#f4f5f7]/80 to-[40%] rounded-sm z-10 backdrop-blur-md"
         >
-          <img src="/logos/Logo-Black.png" alt="Vulcan Logo" className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80" />
-          <img src="/logos/Name-Arch-Black.png" alt="Arch" className="h-3.5 sm:h-5 md:h-6 w-auto object-contain opacity-80 mb-1 sm:mb-2" />
+          <img src="/logos/Logo-Black.png" alt="Vulcan Logo" className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-2" />
+          <div className="flex flex-col items-center mb-1 sm:mb-2 text-center">
+            <span className="text-[13px] sm:text-[20px] md:text-3xl font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide">Vulcan Architecture</span>
+            <span className="text-[7px] sm:text-[9px] md:text-[11px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] uppercase text-gray-800 mt-1">Architecture Studio</span>
+          </div>
           <RainText 
             text="An architecture and design studio creating spaces that extend and complete the identity of a brand. From commercial and corporate environments to residential and hospitality projects, we bring architecture and experience into one language."
             className="text-[8px] sm:text-[10px] md:text-xs text-[#5f5e5e] font-body-sm leading-relaxed mt-1 sm:mt-2"
@@ -359,8 +422,11 @@ export default function Home() {
           transition={{ duration: 1, delay: 1.8 }}
           className="group w-[28vw] sm:w-36 md:w-52 h-[300px] sm:h-[400px] md:h-[560px] bg-gradient-to-t from-[#6e0820]/15 to-[#f4f5f7]/80 to-[40%] rounded-sm backdrop-blur-md"
         >
-          <img src="/logos/Logo-Black.png" alt="Vulcan Logo" className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80" />
-          <img src="/logos/Name-Motors-Black.png" alt="Motors" className="h-3.5 sm:h-5 md:h-6 w-auto object-contain opacity-80 mb-1 sm:mb-2" />
+          <img src="/logos/Logo-Black.png" alt="Vulcan Logo" className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-2" />
+          <div className="flex flex-col items-center mb-1 sm:mb-2 text-center">
+            <span className="text-[13px] sm:text-[20px] md:text-3xl font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide">Vulcan Motors</span>
+            <span className="text-[7px] sm:text-[9px] md:text-[11px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] uppercase text-gray-800 mt-1">Automobile Import & Trading</span>
+          </div>
           <RainText 
             text="An automotive trading company connecting all around the World to Iran through the sourcing and export of vehicles and automotive parts. We provide a focused, reliable bridge between selected markets and the automotive industry."
             className="text-[8px] sm:text-[10px] md:text-xs text-[#5f5e5e] font-body-sm leading-relaxed mt-1 sm:mt-2"
@@ -387,13 +453,14 @@ export default function Home() {
           alt="Vulcan Logo" 
           className="h-10 sm:h-16 md:h-20 w-auto object-contain" 
         />
-        <motion.img 
+        <motion.div 
           layoutId="logo-text" 
           transition={logoTransition}
-          src="/logos/Name-General-Black.png" 
-          alt="Vulcan International" 
-          className="h-6 sm:h-12 md:h-16 w-auto object-contain" 
-        />
+          className="flex flex-col justify-center shrink-0"
+        >
+          <span className="text-[12px] sm:text-[18px] md:text-3xl font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none">Vulcan International</span>
+          <span className="text-[6px] sm:text-[9px] md:text-[11px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.2em] uppercase text-gray-800 mt-1 leading-none">General Trading Group</span>
+        </motion.div>
       </motion.div>
 
     </main>
