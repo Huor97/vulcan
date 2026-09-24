@@ -236,7 +236,9 @@ export default function Home() {
       const touchY = e.touches[0].clientY;
       const delta = touchStartY - touchY; // Positive delta means scrolling down
       
-      if (delta > SCROLL_THRESHOLD) {
+      const TOUCH_THRESHOLD = 80; // 80px swipe is enough on mobile
+      
+      if (delta > TOUCH_THRESHOLD) {
         isThrottled = true;
         touchStartY = touchY; // Reset for next interaction if needed
         advanceState();
