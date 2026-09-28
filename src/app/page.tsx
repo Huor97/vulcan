@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, ReactNode } from "react";
 import { motion, useMotionValue, useSpring, useTransform, HTMLMotionProps } from "framer-motion";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 function TiltCard({ 
   children, 
@@ -389,10 +390,10 @@ export default function Home() {
           className="group w-[26vw] sm:w-32 md:w-48 h-[400px] sm:h-[350px] md:h-[480px] bg-[#f4f5f7]/40 rounded-sm backdrop-blur-md"
         >
           <div className="absolute inset-x-0 bottom-0 h-[60%] -z-10 pointer-events-none">
-            <img src="/images/Left.png" alt="" className="w-full h-full object-cover object-bottom" />
+            <Image src="/images/Left.png" alt="" fill sizes="(max-width: 768px) 30vw, 20vw" className="object-cover object-bottom" />
             <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-[#f4f5f7]" />
           </div>
-          <img src="/logos/Logo-Black.png" alt="Vulcan Logo" className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-0" />
+          <Image src="/logos/Logo-Black.png" alt="Vulcan Logo" width={200} height={200} className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-0" />
           <div className="flex flex-col items-center mb-1 sm:mb-2 text-center">
             <span className="text-[7px] sm:text-[10px] md:text-[13px] lg:text-[16px] font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none whitespace-nowrap uppercase">Vulcan Brand House</span>
             <span className="text-[6px] sm:text-[8px] md:text-[10px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] text-gray-800 mt-0.5 leading-none">Branding & Identity</span>
@@ -411,10 +412,10 @@ export default function Home() {
           className="group w-[28vw] sm:w-32 md:w-48 h-[480px] sm:h-[460px] md:h-[620px] bg-[#f4f5f7]/40 rounded-sm z-10 backdrop-blur-md"
         >
           <div className="absolute inset-x-0 bottom-0 h-[60%] -z-10 pointer-events-none">
-            <img src="/images/Center.png" alt="" className="w-full h-full object-cover object-bottom" />
+            <Image src="/images/Center.png" alt="" fill sizes="(max-width: 768px) 30vw, 20vw" className="object-cover object-bottom" />
             <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-[#f4f5f7]" />
           </div>
-          <img src="/logos/Logo-Black.png" alt="Vulcan Logo" className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-0 mt-[40px] sm:mt-[55px] md:mt-[70px]" />
+          <Image src="/logos/Logo-Black.png" alt="Vulcan Logo" width={200} height={200} className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-0 mt-[40px] sm:mt-[55px] md:mt-[70px]" />
           <div className="flex flex-col items-center mb-1 sm:mb-2 text-center">
             <span className="text-[7px] sm:text-[10px] md:text-[13px] lg:text-[16px] font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none whitespace-nowrap uppercase">Vulcan Architecture</span>
             <span className="text-[6px] sm:text-[8px] md:text-[10px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] text-gray-800 mt-0.5 leading-none">Architecture Studio</span>
@@ -433,10 +434,10 @@ export default function Home() {
           className="group w-[26vw] sm:w-32 md:w-48 h-[400px] sm:h-[350px] md:h-[480px] bg-[#f4f5f7]/40 rounded-sm backdrop-blur-md"
         >
           <div className="absolute inset-x-0 bottom-0 h-[60%] -z-10 pointer-events-none">
-            <img src="/images/Right.png" alt="" className="w-full h-full object-cover object-bottom" />
+            <Image src="/images/Right.png" alt="" fill sizes="(max-width: 768px) 30vw, 20vw" className="object-cover object-bottom" />
             <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-[#f4f5f7]" />
           </div>
-          <img src="/logos/Logo-Black.png" alt="Vulcan Logo" className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-0" />
+          <Image src="/logos/Logo-Black.png" alt="Vulcan Logo" width={200} height={200} className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-0" />
           <div className="flex flex-col items-center mb-1 sm:mb-2 text-center">
             <span className="text-[7px] sm:text-[10px] md:text-[13px] lg:text-[16px] font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none whitespace-nowrap uppercase">Vulcan Motors</span>
             <span className="text-[6px] sm:text-[8px] md:text-[10px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] text-gray-800 mt-0.5 leading-none">Automobile Import & Trading</span>
