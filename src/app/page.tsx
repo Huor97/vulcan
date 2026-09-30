@@ -50,6 +50,12 @@ function TiltCard({
     if (isActive === false) {
       x.set(0);
       y.set(0);
+    } else {
+      const t = setTimeout(() => {
+        x.set(0);
+        y.set(0);
+      }, 800);
+      return () => clearTimeout(t);
     }
   }, [isActive, x, y]);
 
@@ -92,14 +98,9 @@ export default function Home() {
   }, []);
 
   const handleCardClick = (id: number) => {
-    // Basic detection for touch devices
     const isTouch = window.matchMedia("(pointer: coarse)").matches;
     if (isTouch) {
-      setActiveCard(id);
-      if (activeCardTimeoutRef.current) clearTimeout(activeCardTimeoutRef.current);
-      activeCardTimeoutRef.current = setTimeout(() => {
-        setActiveCard(null);
-      }, 800); // 0.8s to let the user tap the link
+      setActiveCard(prev => prev === id ? null : id);
     }
   };
 
@@ -364,7 +365,7 @@ export default function Home() {
           <div className="flex flex-col items-center mb-1 sm:mb-2 text-center transition-colors duration-700 group-hover:text-white group-data-[active=true]:text-white" style={{ transform: "translateZ(50px)" }}>
             <span className="text-[5px] sm:text-[7px] md:text-[9px] lg:text-[11px] font-[family-name:var(--font-cormorant)] font-bold italic tracking-[0.2em] leading-none uppercase">Vulcan</span>
             <span className="text-[10px] sm:text-[14px] md:text-[19px] lg:text-[24px] font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none whitespace-nowrap uppercase mt-[1px] sm:mt-[2px]">Brand House</span>
-            <span className="text-[6px] sm:text-[8px] md:text-[10px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] text-gray-800 group-hover:text-gray-300 group-data-[active=true]:text-gray-300 transition-colors duration-700 mt-[1px] sm:mt-[2px] leading-none">Branding & Identity</span>
+            <span className="text-[6px] sm:text-[8px] md:text-[10px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] text-gray-800 group-hover:text-gray-300 group-data-[active=true]:text-gray-300 transition-colors duration-700 mt-[1px] sm:mt-[2px] leading-none">Brand Strategy & Identity</span>
           </div>
           <div style={{ transform: "translateZ(60px)" }} className="flex flex-col items-center">
             <p className="text-[6px] sm:text-[8px] md:text-[10px] text-[#5f5e5e] group-hover:text-gray-300 group-data-[active=true]:text-gray-300 font-body-sm leading-relaxed mt-1 sm:mt-2 text-justify opacity-0 translate-y-8 group-hover:opacity-100 group-hover:translate-y-0 group-data-[active=true]:opacity-100 group-data-[active=true]:translate-y-0 transition-all duration-[800ms] ease-out">
