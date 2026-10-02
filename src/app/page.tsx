@@ -16,7 +16,7 @@ function TiltCard({
 }: { 
   children: ReactNode; 
   className?: string; 
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   initial?: HTMLMotionProps<"div">["initial"];
   animate?: HTMLMotionProps<"div">["animate"];
   transition?: HTMLMotionProps<"div">["transition"];
@@ -25,6 +25,7 @@ function TiltCard({
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 });
   const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
@@ -39,23 +40,29 @@ function TiltCard({
     const yPct = (e.clientY - rect.top) / rect.height - 0.5;
     x.set(xPct);
     y.set(yPct);
+
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    if (isTouch) {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        x.set(0);
+        y.set(0);
+      }, 800);
+    }
   };
 
   const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
+    if (!isActive) {
+      x.set(0);
+      y.set(0);
+    }
   };
 
   useEffect(() => {
     if (isActive === false) {
       x.set(0);
       y.set(0);
-    } else {
-      const t = setTimeout(() => {
-        x.set(0);
-        y.set(0);
-      }, 800);
-      return () => clearTimeout(t);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     }
   }, [isActive, x, y]);
 
@@ -97,10 +104,11 @@ export default function Home() {
     };
   }, []);
 
-  const handleCardClick = (id: number) => {
+  const handleCardClick = (id: number, e: React.MouseEvent) => {
+    e.stopPropagation();
     const isTouch = window.matchMedia("(pointer: coarse)").matches;
     if (isTouch) {
-      setActiveCard(prev => prev === id ? null : id);
+      setActiveCard(id); // Stay active even on second tap
     }
   };
 
@@ -334,7 +342,10 @@ export default function Home() {
   }
 
   return (
-    <main className="w-full min-h-screen bg-[#f4f5f7] text-black flex flex-col items-center justify-center relative overflow-hidden font-sans">
+    <main 
+      className="w-full min-h-screen bg-[#f4f5f7] text-black flex flex-col items-center justify-center relative overflow-hidden font-sans"
+      onClick={() => setActiveCard(null)}
+    >
       
       <motion.div 
         initial={{ opacity: 0 }} 
@@ -347,7 +358,7 @@ export default function Home() {
       {/* Frames appear in sequence AFTER the logos have moved */}
       <div className="flex items-center justify-center gap-2 sm:gap-4 mt-6 sm:mt-12">
         <TiltCard 
-          onClick={() => handleCardClick(1)}
+          onClick={(e) => handleCardClick(1, e)}
           isActive={activeCard === 1}
           initial={{ opacity: 0, scale: 0.95, boxShadow: shadowSide }} 
           animate={{ opacity: 1, scale: 1, boxShadow: shadowSide }} 
@@ -392,7 +403,7 @@ export default function Home() {
           </div>
         </TiltCard>
         <TiltCard 
-          onClick={() => handleCardClick(2)}
+          onClick={(e) => handleCardClick(2, e)}
           isActive={activeCard === 2}
           initial={{ opacity: 0, scale: 0.95, boxShadow: shadowCenter }} 
           animate={{ opacity: 1, scale: 1, boxShadow: shadowCenter }} 
@@ -437,7 +448,7 @@ export default function Home() {
           </div>
         </TiltCard>
         <TiltCard 
-          onClick={() => handleCardClick(3)}
+          onClick={(e) => handleCardClick(3, e)}
           isActive={activeCard === 3}
           initial={{ opacity: 0, scale: 0.95, boxShadow: shadowSide }} 
           animate={{ opacity: 1, scale: 1, boxShadow: shadowSide }} 
