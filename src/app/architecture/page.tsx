@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function ArchitecturePage() {
   return (
-    <main className="w-full pt-20 bg-[#000000] text-white min-h-screen">
+    <main className="w-full pt-20 bg-black bg-gradient-to-b from-[#343434] via-black via-50% to-black bg-[length:100%_100vh] bg-no-repeat min-h-screen text-white">
       <Link href="/" className="fixed top-6 left-6 md:top-10 md:left-10 z-50 px-4 py-2 bg-white text-black font-label-mono text-label-mono uppercase tracking-wider hover:bg-[#eeeeed] transition-colors shadow-[5px_5px_15px_rgba(0,0,0,0.5)]">
         ← Retour
       </Link>

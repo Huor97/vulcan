@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, ReactNode } from "react";
 import { motion, useMotionValue, useSpring, useTransform, HTMLMotionProps } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 function TiltCard({ 
   children, 
@@ -94,9 +94,20 @@ function TiltCard({
 }
 
 export default function Home() {
+  const router = useRouter();
   const [appState, setAppState] = useState("init"); // "init", "loading", "center", "center-text", "center-no-text", "full"
   const [activeCard, setActiveCard] = useState<number | null>(null);
+  const [transitioningCard, setTransitioningCard] = useState<number | null>(null);
   const activeCardTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleNavigate = (e: React.MouseEvent, id: number, href: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setTransitioningCard(id);
+    setTimeout(() => {
+      router.push(href);
+    }, 700);
+  };
 
   useEffect(() => {
     return () => {
@@ -361,8 +372,13 @@ export default function Home() {
           onClick={(e) => handleCardClick(1, e)}
           isActive={activeCard === 1}
           initial={{ opacity: 0, scale: 0.95, boxShadow: shadowSide }} 
-          animate={{ opacity: 1, scale: 1, boxShadow: shadowSide }} 
-          transition={{ duration: 1, delay: 1.2 }}
+          animate={{ 
+            opacity: transitioningCard === 1 ? 1 : (transitioningCard ? 0 : 1), 
+            scale: transitioningCard === 1 ? 15 : (transitioningCard ? 0.8 : 1),
+            boxShadow: shadowSide,
+            zIndex: transitioningCard === 1 ? 100 : 1
+          }} 
+          transition={{ duration: transitioningCard ? 0.7 : 1, delay: transitioningCard ? 0 : 1.2, ease: "easeInOut" }}
           className="group w-[31vw] sm:w-32 md:w-48 h-[400px] sm:h-[350px] md:h-[480px] rounded-sm"
         >
           {/* Animated Backgrounds */}
@@ -372,17 +388,17 @@ export default function Home() {
           <div className="absolute inset-x-0 bottom-0 h-[60%] -z-10 pointer-events-none group-hover:opacity-[0.15] group-data-[active=true]:opacity-[0.15] transition-opacity duration-700 [mask-image:linear-gradient(to_bottom,transparent_0%,black_40%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_40%)] rounded-b-sm">
             <Image src="/images/Left.png" alt="" fill sizes="(max-width: 768px) 30vw, 20vw" className="object-cover object-bottom rounded-b-sm" />
           </div>
-          <Image src="/logos/Logo-Black.png" alt="Vulcan Logo" width={200} height={200} className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-0 group-hover:brightness-0 group-hover:invert group-data-[active=true]:brightness-0 group-data-[active=true]:invert transition-all duration-700" style={{ transform: "translateZ(70px)" }} />
-          <div className="flex flex-col items-center mb-1 sm:mb-2 text-center transition-colors duration-700 group-hover:text-white group-data-[active=true]:text-white" style={{ transform: "translateZ(50px)" }}>
+          <Image src="/logos/Logo-Black.png" alt="Vulcan Logo" width={200} height={200} className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-0 group-hover:brightness-0 group-hover:invert group-data-[active=true]:brightness-0 group-data-[active=true]:invert transition-all duration-700" style={{ transform: "translateZ(70px)", opacity: transitioningCard === 1 ? 0 : undefined }} />
+          <div className="flex flex-col items-center mb-1 sm:mb-2 text-center transition-colors duration-700 group-hover:text-white group-data-[active=true]:text-white" style={{ transform: "translateZ(50px)", opacity: transitioningCard === 1 ? 0 : undefined, transition: transitioningCard === 1 ? "opacity 0.2s" : undefined }}>
             <span className="text-[7px] sm:text-[7px] md:text-[9px] lg:text-[11px] font-[family-name:var(--font-cormorant)] font-bold italic tracking-[0.2em] leading-none uppercase">Vulcan</span>
             <span className="text-sm sm:text-[14px] md:text-[19px] lg:text-[24px] font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none whitespace-nowrap uppercase mt-[1px] sm:mt-[2px]">Brand House</span>
             <span className="text-[10px] sm:text-[8px] md:text-[10px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] text-gray-800 group-hover:text-gray-300 group-data-[active=true]:text-gray-300 transition-colors duration-700 leading-none">Brand Strategy & Identity</span>
           </div>
-          <div style={{ transform: "translateZ(60px)" }} className="flex flex-col items-center">
+          <div style={{ transform: "translateZ(60px)", opacity: transitioningCard === 1 ? 0 : undefined, transition: transitioningCard === 1 ? "opacity 0.2s" : undefined }} className="flex flex-col items-center">
             <p className="text-[6px] sm:text-[8px] md:text-[10px] text-[#5f5e5e] group-hover:text-gray-300 group-data-[active=true]:text-gray-300 font-body-sm leading-relaxed mt-1 sm:mt-2 text-justify opacity-0 translate-y-8 group-hover:opacity-100 group-hover:translate-y-0 group-data-[active=true]:opacity-100 group-data-[active=true]:translate-y-0 transition-all duration-[800ms] ease-out">
               A global brand house shaping every touchpoint of a brand — making all audience experiences from strategy and identity to environments, packaging and people. With more than 200 projects across more than 10 countries, we build distinctive brands designed to exist beyond borders.
             </p>
-            <Link href="/branding" className="mt-2 sm:mt-3 opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto group-data-[active=true]:pointer-events-auto z-50 p-2 -m-2 cursor-pointer">
+            <button onClick={(e) => handleNavigate(e, 1, '/branding')} className="mt-2 sm:mt-3 opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto group-data-[active=true]:pointer-events-auto z-50 p-2 -m-2 cursor-pointer border-none bg-transparent">
               <motion.div
                 animate={{
                   scale: [0.95, 1, 0.95],
@@ -399,15 +415,20 @@ export default function Home() {
                 Click for more
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
               </motion.div>
-            </Link>
+            </button>
           </div>
         </TiltCard>
         <TiltCard 
           onClick={(e) => handleCardClick(2, e)}
           isActive={activeCard === 2}
           initial={{ opacity: 0, scale: 0.95, boxShadow: shadowCenter }} 
-          animate={{ opacity: 1, scale: 1, boxShadow: shadowCenter }} 
-          transition={{ duration: 1, delay: 1.5 }}
+          animate={{ 
+            opacity: transitioningCard === 2 ? 1 : (transitioningCard ? 0 : 1), 
+            scale: transitioningCard === 2 ? 15 : (transitioningCard ? 0.8 : 1),
+            boxShadow: shadowCenter,
+            zIndex: transitioningCard === 2 ? 100 : 10
+          }} 
+          transition={{ duration: transitioningCard ? 0.7 : 1, delay: transitioningCard ? 0 : 1.5, ease: "easeInOut" }}
           className="group w-[31vw] sm:w-32 md:w-48 h-[480px] sm:h-[460px] md:h-[620px] rounded-sm z-10"
         >
           {/* Animated Backgrounds */}
@@ -417,17 +438,17 @@ export default function Home() {
           <div className="absolute inset-x-0 bottom-0 h-[60%] -z-10 pointer-events-none group-hover:opacity-[0.15] group-data-[active=true]:opacity-[0.15] transition-opacity duration-700 [mask-image:linear-gradient(to_bottom,transparent_0%,black_40%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_40%)] rounded-b-sm">
             <Image src="/images/Center.png" alt="" fill sizes="(max-width: 768px) 30vw, 20vw" className="object-cover object-bottom rounded-b-sm" />
           </div>
-          <Image src="/logos/Logo-Black.png" alt="Vulcan Logo" width={200} height={200} className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-0 mt-[40px] sm:mt-[55px] md:mt-[70px] group-hover:brightness-0 group-hover:invert group-data-[active=true]:brightness-0 group-data-[active=true]:invert transition-all duration-700" style={{ transform: "translateZ(70px)" }} />
-          <div className="flex flex-col items-center mb-1 sm:mb-2 text-center transition-colors duration-700 text-black group-hover:text-white group-data-[active=true]:text-white" style={{ transform: "translateZ(50px)" }}>
+          <Image src="/logos/Logo-Black.png" alt="Vulcan Logo" width={200} height={200} className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-0 mt-[40px] sm:mt-[55px] md:mt-[70px] group-hover:brightness-0 group-hover:invert group-data-[active=true]:brightness-0 group-data-[active=true]:invert transition-all duration-700" style={{ transform: "translateZ(70px)", opacity: transitioningCard === 2 ? 0 : undefined }} />
+          <div className="flex flex-col items-center mb-1 sm:mb-2 text-center transition-colors duration-700 text-black group-hover:text-white group-data-[active=true]:text-white" style={{ transform: "translateZ(50px)", opacity: transitioningCard === 2 ? 0 : undefined, transition: transitioningCard === 2 ? "opacity 0.2s" : undefined }}>
             <span className="text-[7px] sm:text-[7px] md:text-[9px] lg:text-[11px] font-[family-name:var(--font-cormorant)] font-bold italic tracking-[0.2em] leading-none uppercase">Vulcan</span>
             <span className="text-sm sm:text-[14px] md:text-[19px] lg:text-[24px] font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none whitespace-nowrap uppercase mt-[1px] sm:mt-[2px]">Architecture</span>
             <span className="text-[10px] sm:text-[8px] md:text-[10px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] text-gray-800 group-hover:text-gray-300 group-data-[active=true]:text-gray-300 transition-colors duration-700 leading-none">Spatial Design & Development</span>
           </div>
-          <div style={{ transform: "translateZ(60px)" }} className="flex flex-col items-center">
+          <div style={{ transform: "translateZ(60px)", opacity: transitioningCard === 2 ? 0 : undefined, transition: transitioningCard === 2 ? "opacity 0.2s" : undefined }} className="flex flex-col items-center">
             <p className="text-[6px] sm:text-[8px] md:text-[10px] text-[#5f5e5e] group-hover:text-gray-300 group-data-[active=true]:text-gray-300 font-body-sm leading-relaxed mt-1 sm:mt-2 text-justify opacity-0 translate-y-8 group-hover:opacity-100 group-hover:translate-y-0 group-data-[active=true]:opacity-100 group-data-[active=true]:translate-y-0 transition-all duration-[800ms] ease-out">
               An architecture and design studio creating spaces that extend and complete the identity of a brand. From commercial and corporate environments to residential and hospitality projects, we bring architecture and experience into one language.
             </p>
-            <Link href="/architecture" className="mt-4 sm:mt-6 md:mt-7 opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto group-data-[active=true]:pointer-events-auto z-50 p-2 -m-2 cursor-pointer">
+            <button onClick={(e) => handleNavigate(e, 2, '/architecture')} className="mt-4 sm:mt-6 md:mt-7 opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto group-data-[active=true]:pointer-events-auto z-50 p-2 -m-2 cursor-pointer border-none bg-transparent">
               <motion.div
                 animate={{
                   scale: [0.95, 1, 0.95],
@@ -444,15 +465,20 @@ export default function Home() {
                 Click for more
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
               </motion.div>
-            </Link>
+            </button>
           </div>
         </TiltCard>
         <TiltCard 
           onClick={(e) => handleCardClick(3, e)}
           isActive={activeCard === 3}
           initial={{ opacity: 0, scale: 0.95, boxShadow: shadowSide }} 
-          animate={{ opacity: 1, scale: 1, boxShadow: shadowSide }} 
-          transition={{ duration: 1, delay: 1.8 }}
+          animate={{ 
+            opacity: transitioningCard === 3 ? 1 : (transitioningCard ? 0 : 1), 
+            scale: transitioningCard === 3 ? 15 : (transitioningCard ? 0.8 : 1),
+            boxShadow: shadowSide,
+            zIndex: transitioningCard === 3 ? 100 : 1
+          }} 
+          transition={{ duration: transitioningCard ? 0.7 : 1, delay: transitioningCard ? 0 : 1.8, ease: "easeInOut" }}
           className="group w-[31vw] sm:w-32 md:w-48 h-[400px] sm:h-[350px] md:h-[480px] rounded-sm"
         >
           {/* Animated Backgrounds */}
@@ -462,17 +488,17 @@ export default function Home() {
           <div className="absolute inset-x-0 bottom-0 h-[60%] -z-10 pointer-events-none group-hover:opacity-[0.15] group-data-[active=true]:opacity-[0.15] transition-opacity duration-700 [mask-image:linear-gradient(to_bottom,transparent_0%,black_40%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_40%)] rounded-b-sm">
             <Image src="/images/Right.png" alt="" fill sizes="(max-width: 768px) 30vw, 20vw" className="object-cover object-bottom rounded-b-sm" />
           </div>
-          <Image src="/logos/Logo-Black.png" alt="Vulcan Logo" width={200} height={200} className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-0 group-hover:brightness-0 group-hover:invert group-data-[active=true]:brightness-0 group-data-[active=true]:invert transition-all duration-700" style={{ transform: "translateZ(70px)" }} />
-          <div className="flex flex-col items-center mb-1 sm:mb-2 text-center transition-colors duration-700 group-hover:text-white group-data-[active=true]:text-white" style={{ transform: "translateZ(50px)" }}>
+          <Image src="/logos/Logo-Black.png" alt="Vulcan Logo" width={200} height={200} className="h-6 sm:h-8 md:h-10 w-auto object-contain opacity-80 mb-0 group-hover:brightness-0 group-hover:invert group-data-[active=true]:brightness-0 group-data-[active=true]:invert transition-all duration-700" style={{ transform: "translateZ(70px)", opacity: transitioningCard === 3 ? 0 : undefined }} />
+          <div className="flex flex-col items-center mb-1 sm:mb-2 text-center transition-colors duration-700 group-hover:text-white group-data-[active=true]:text-white" style={{ transform: "translateZ(50px)", opacity: transitioningCard === 3 ? 0 : undefined, transition: transitioningCard === 3 ? "opacity 0.2s" : undefined }}>
             <span className="text-[7px] sm:text-[7px] md:text-[9px] lg:text-[11px] font-[family-name:var(--font-cormorant)] font-bold italic tracking-[0.2em] leading-none uppercase">Vulcan</span>
             <span className="text-sm sm:text-[14px] md:text-[19px] lg:text-[24px] font-[family-name:var(--font-cormorant)] font-bold italic tracking-wide leading-none whitespace-nowrap uppercase mt-[1px] sm:mt-[2px]">Motors</span>
             <span className="text-[10px] sm:text-[8px] md:text-[10px] font-[family-name:var(--font-cormorant)] font-light italic tracking-[0.1em] text-gray-800 group-hover:text-gray-300 group-data-[active=true]:text-gray-300 transition-colors duration-700 leading-none">Automotive Sourcing & Trading</span>
           </div>
-          <div style={{ transform: "translateZ(60px)" }} className="flex flex-col items-center">
+          <div style={{ transform: "translateZ(60px)", opacity: transitioningCard === 3 ? 0 : undefined, transition: transitioningCard === 3 ? "opacity 0.2s" : undefined }} className="flex flex-col items-center">
             <p className="text-[6px] sm:text-[8px] md:text-[10px] text-[#5f5e5e] group-hover:text-gray-300 group-data-[active=true]:text-gray-300 font-body-sm leading-relaxed mt-1 sm:mt-2 text-justify opacity-0 translate-y-8 group-hover:opacity-100 group-hover:translate-y-0 group-data-[active=true]:opacity-100 group-data-[active=true]:translate-y-0 transition-all duration-[800ms] ease-out">
               An automotive trading company connecting all around the World to Iran through the sourcing and export of vehicles and automotive parts. We provide a focused, reliable bridge between selected markets and the automotive industry.
             </p>
-            <Link href="/transport" className="mt-4 sm:mt-6 md:mt-7 opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto group-data-[active=true]:pointer-events-auto z-50 p-2 -m-2 cursor-pointer">
+            <button onClick={(e) => handleNavigate(e, 3, '/transport')} className="mt-4 sm:mt-6 md:mt-7 opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto group-data-[active=true]:pointer-events-auto z-50 p-2 -m-2 cursor-pointer border-none bg-transparent">
               <motion.div
                 animate={{
                   scale: [0.95, 1, 0.95],
@@ -489,7 +515,7 @@ export default function Home() {
                 Click for more
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
               </motion.div>
-            </Link>
+            </button>
           </div>
         </TiltCard>
       </div>
