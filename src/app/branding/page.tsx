@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function BrandingPage() {
   return (
-    <main className="w-full pt-20 bg-primary min-h-screen">
+    <main className="w-full pt-20 bg-black bg-gradient-to-b from-[#333333] via-black via-50% to-black bg-[length:100%_100vh] bg-no-repeat min-h-screen text-white">
       <Link href="/" className="fixed top-6 left-6 md:top-10 md:left-10 z-50 px-4 py-2 bg-white text-black font-label-mono text-label-mono uppercase tracking-wider hover:bg-[#eeeeed] transition-colors shadow-[5px_5px_15px_rgba(0,0,0,0.5)]">
         ← Retour
       </Link>
@@ -74,7 +74,7 @@ export default function BrandingPage() {
 <h3 className="font-headline-xl text-headline-xl text-surface tracking-tight">Vulcan Symbol Archive</h3>
 </div>
 <p className="font-body-md text-body-md text-primary-fixed-dim">
-            The mathematical derivation of the faceted triangular 'V' emblem. Built upon optical vector grids, strict 30° angled bevel cuts, golden ratio balance, and absolute monochrome polarity. Engineered to survive 1:1 scale on heavy machinery and 8px digital viewports with equal architectural permanence.
+            The mathematical derivation of the faceted triangular V emblem. Built upon optical vector grids, strict 30° angled bevel cuts, golden ratio balance, and absolute monochrome polarity. Engineered to survive 1:1 scale on heavy machinery and 8px digital viewports with equal architectural permanence.
           </p>
 <div className="grid grid-cols-3 gap-space-sm pt-space-xs font-label-mono text-label-mono text-primary-fixed-dim">
 <div className="flex flex-col bg-inverse-surface p-space-sm">
