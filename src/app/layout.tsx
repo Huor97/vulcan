@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
 
 const inter = Inter({
   variable: "--font-inter",
