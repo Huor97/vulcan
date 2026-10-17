@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef, ReactNode } from "react";
+import { useState, useEffect, useRef, useSyncExternalStore, ReactNode } from "react";
 import { motion, useMotionValue, useSpring, useTransform, HTMLMotionProps } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import MouseScroll from "@/components/MouseScroll";
 
 function TiltCard({ 
   children, 
@@ -95,7 +96,14 @@ function TiltCard({
 
 export default function Home() {
   const router = useRouter();
-  const [appState, setAppState] = useState("init"); // "init", "loading", "center", "center-text", "center-no-text", "full"
+  const introState = useSyncExternalStore(
+    () => () => {},
+    () => (sessionStorage.getItem("vulcan_intro_played") === "true" ? "full" : "ready"),
+    () => "init"
+  );
+  const [animationStep, setAnimationStep] = useState<string>("loading");
+  const appState = introState === "init" ? "init" : introState === "full" ? "full" : animationStep;
+
   const [activeCard, setActiveCard] = useState<number | null>(null);
   const [transitioningCard, setTransitioningCard] = useState<number | null>(null);
   const activeCardTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -103,6 +111,7 @@ export default function Home() {
   const handleNavigate = (e: React.MouseEvent, id: number, href: string) => {
     e.preventDefault();
     e.stopPropagation();
+    sessionStorage.setItem("vulcan_intro_played", "true");
     setTransitioningCard(id);
     setTimeout(() => {
       router.push(href);
@@ -110,8 +119,9 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const timeout = activeCardTimeoutRef.current;
     return () => {
-      if (activeCardTimeoutRef.current) clearTimeout(activeCardTimeoutRef.current);
+      if (timeout) clearTimeout(timeout);
     };
   }, []);
 
@@ -124,24 +134,10 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (typeof performance !== "undefined") {
-      const navEntries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
-      const isReload = navEntries.length > 0 
-        ? navEntries[0].type === "reload"
-        : (performance.navigation && performance.navigation.type === 1);
-        
-      if (isReload) {
-        sessionStorage.removeItem("vulcan_intro_played");
-      }
-    }
-
-    const isPlayed = sessionStorage.getItem("vulcan_intro_played");
-    if (isPlayed) {
-      setTimeout(() => setAppState("full"), 0);
+    if (sessionStorage.getItem("vulcan_intro_played") === "true") {
       return;
     }
 
-    setTimeout(() => setAppState("loading"), 0);
     let isMounted = true;
 
     const imagesToPreload = [
@@ -168,7 +164,7 @@ export default function Home() {
 
     Promise.all([preloadPromise, timerPromise]).then(() => {
       if (!isMounted) return;
-      setAppState("center-icon");
+      setAnimationStep("center-icon");
     });
 
     return () => {
@@ -185,15 +181,15 @@ export default function Home() {
 
     const advanceState = () => {
       if (appState === "center-icon") {
-        setAppState("center");
+        setAnimationStep("center");
         setTimeout(() => { isThrottled = false; }, 2500); // 2.5s cooldown
       } else if (appState === "center") {
-        setAppState("center-text");
+        setAnimationStep("center-text");
         setTimeout(() => { isThrottled = false; }, 3000); // 3s cooldown to let text settle
       } else if (appState === "center-text") {
-        setAppState("center-no-text");
+        setAnimationStep("center-no-text");
         setTimeout(() => {
-          setAppState("full");
+          setAnimationStep("full");
           sessionStorage.setItem("vulcan_intro_played", "true");
         }, 1500); // Wait 1.5s for text to fully fade out before moving to full
       }
@@ -278,7 +274,7 @@ export default function Home() {
 
   if (appState.startsWith("center")) {
     return (
-      <main className="w-full min-h-screen bg-[#f4f5f7] text-black flex flex-col items-center justify-center font-sans overflow-hidden px-6 relative">
+      <main className="w-full h-dvh bg-[#f4f5f7] text-black flex flex-col items-center justify-center font-sans overflow-hidden px-6 relative">
         <motion.div 
           layout
           layoutId="logo-container"
@@ -337,16 +333,9 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: appState !== "center-no-text" ? 1 : 0 }}
           transition={{ duration: 1 }}
-          className="absolute bottom-4 sm:bottom-12 flex flex-col items-center gap-3 pointer-events-none"
+          className="absolute bottom-6 sm:bottom-10 pointer-events-none text-black"
         >
-          <span className="font-label-mono text-label-mono text-[#a1a1aa] uppercase tracking-widest text-[10px]">Scroll to explore</span>
-          <div className="w-[1px] h-16 bg-gray-300 relative overflow-hidden">
-            <motion.div 
-              className="w-full h-1/2 bg-black absolute top-0"
-              animate={{ y: ["-100%", "200%"] }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-            />
-          </div>
+          <MouseScroll text="Scroll" />
         </motion.div>
       </main>
     );
@@ -354,7 +343,7 @@ export default function Home() {
 
   return (
     <main 
-      className="w-full min-h-screen bg-[#f4f5f7] text-black flex flex-col items-center justify-center relative overflow-hidden font-sans"
+      className="w-full h-dvh bg-[#f4f5f7] text-black flex flex-col items-center justify-center relative overflow-hidden font-sans"
       onClick={() => setActiveCard(null)}
     >
       
@@ -367,7 +356,7 @@ export default function Home() {
       </motion.div>
 
       {/* Frames appear in sequence AFTER the logos have moved */}
-      <div className="flex items-center justify-center gap-2 sm:gap-4 mt-6 sm:mt-12">
+      <div className="flex items-center justify-center gap-2 sm:gap-4 mt-2 sm:mt-12">
         <TiltCard 
           onClick={(e) => handleCardClick(1, e)}
           isActive={activeCard === 1}
@@ -379,7 +368,7 @@ export default function Home() {
             zIndex: transitioningCard === 1 ? 100 : 1
           }} 
           transition={{ duration: transitioningCard ? 0.7 : 1, delay: transitioningCard ? 0 : 1.2, ease: "easeInOut" }}
-          className="group w-[31vw] sm:w-32 md:w-48 h-[400px] sm:h-[350px] md:h-[480px] rounded-sm"
+          className="group w-[31vw] sm:w-32 md:w-48 h-[55dvh] sm:h-[350px] md:h-[480px] rounded-sm"
         >
           {/* Animated Backgrounds */}
           <div className="absolute inset-0 bg-[#f4f5f7]/40 backdrop-blur-md group-hover:opacity-0 group-data-[active=true]:opacity-0 transition-opacity duration-700 -z-20 rounded-sm" />
@@ -429,7 +418,7 @@ export default function Home() {
             zIndex: transitioningCard === 2 ? 100 : 10
           }} 
           transition={{ duration: transitioningCard ? 0.7 : 1, delay: transitioningCard ? 0 : 1.5, ease: "easeInOut" }}
-          className="group w-[31vw] sm:w-32 md:w-48 h-[480px] sm:h-[460px] md:h-[620px] rounded-sm z-10"
+          className="group w-[31vw] sm:w-32 md:w-48 h-[68dvh] sm:h-[460px] md:h-[620px] rounded-sm z-10"
         >
           {/* Animated Backgrounds */}
           <div className="absolute inset-0 bg-[#f4f5f7]/40 backdrop-blur-md group-hover:opacity-0 group-data-[active=true]:opacity-0 transition-opacity duration-700 -z-20 rounded-sm" />
@@ -479,7 +468,7 @@ export default function Home() {
             zIndex: transitioningCard === 3 ? 100 : 1
           }} 
           transition={{ duration: transitioningCard ? 0.7 : 1, delay: transitioningCard ? 0 : 1.8, ease: "easeInOut" }}
-          className="group w-[31vw] sm:w-32 md:w-48 h-[400px] sm:h-[350px] md:h-[480px] rounded-sm"
+          className="group w-[31vw] sm:w-32 md:w-48 h-[55dvh] sm:h-[350px] md:h-[480px] rounded-sm"
         >
           {/* Animated Backgrounds */}
           <div className="absolute inset-0 bg-[#f4f5f7]/40 backdrop-blur-md group-hover:opacity-0 group-data-[active=true]:opacity-0 transition-opacity duration-700 -z-20 rounded-sm" />
@@ -524,20 +513,20 @@ export default function Home() {
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
         transition={{ duration: 0.8, delay: 1 }}
-        className="w-16 h-[2px] bg-black mt-10 md:mt-24 mb-6"
+        className="w-16 h-[2px] bg-black mt-12 sm:mt-12 md:mt-14 2xl:mt-24 mb-2 sm:mb-6"
       ></motion.div>
 
       <motion.div 
         layoutId="logo-container"
         transition={logoTransition}
-        className="flex items-center justify-center gap-2 mb-2 sm:mb-4"
+        className="flex items-center justify-center gap-2 mb-1 sm:mb-4"
       >
         <motion.img 
           layoutId="logo-icon" 
           transition={logoTransition}
           src="/logos/Logo-Black.png" 
           alt="Vulcan Logo" 
-          className="h-10 sm:h-14 md:h-16 w-auto object-contain" 
+          className="h-6 sm:h-14 md:h-16 w-auto object-contain" 
         />
         <motion.div 
           layoutId="logo-text" 

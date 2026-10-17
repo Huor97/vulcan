@@ -96,10 +96,11 @@
 }
 
 @layer base {
-  body {
-    background-color: var(--color-primary);
+  html, body {
+    background-color: #f4f5f7;
     color: var(--color-on-primary);
     font-family: var(--font-inter), sans-serif;
+    overscroll-behavior: none;
   }
 }
 

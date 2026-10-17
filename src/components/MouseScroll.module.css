@@ -1,0 +1,289 @@
+.mouseWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  pointer-events: none;
+
+  /* Sizing variables */
+  --widthMouse: 28px;
+  --heightMouse: 48px;
+  --borderWidth: 2.5px;
+  --sizeTrackball: 5px;
+  --posTrackball: 10px;
+  --shrinkTrackball: 0.4;
+  --posMouse: 6px;
+  --posText: 2px;
+  --animDuration: 5s;
+
+  /* Theme colors (defaults to site background & dark outlines) */
+  --colorBg: #f4f5f7;
+  --colorOutline: #000000;
+  --colorOutlineFade: #c4c7c7;
+}
+
+@media (min-width: 640px) {
+  .mouseWrap {
+    --widthMouse: 32px;
+    --heightMouse: 54px;
+    --borderWidth: 3px;
+    --sizeTrackball: 6px;
+    --posTrackball: 12px;
+    --posMouse: 7px;
+  }
+}
+
+.mouse {
+  background: var(--colorOutlineFade)
+    linear-gradient(
+      var(--colorOutline) 0%,
+      var(--colorOutline) 50%,
+      transparent 50%,
+      transparent 100%
+    );
+  position: relative;
+  width: var(--widthMouse);
+  height: var(--heightMouse);
+  border-radius: 9999px !important;
+  background-size: 100% 200%;
+  animation: colorSlide var(--animDuration) linear infinite,
+    nudgeMouse var(--animDuration) ease-out infinite;
+}
+
+/* Inner cutout - strictly equal border on all sides */
+.mouse::before {
+  content: "";
+  position: absolute;
+  inset: var(--borderWidth);
+  background-color: var(--colorBg);
+  border-radius: 9999px !important;
+}
+
+/* Trackball centered horizontally */
+.mouse::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: calc(-1 * var(--sizeTrackball) / 2);
+  background-color: var(--colorOutline);
+  width: var(--sizeTrackball);
+  height: var(--sizeTrackball);
+  border-radius: 9999px !important;
+  animation: trackBallSlide var(--animDuration) linear infinite;
+}
+
+.label {
+  margin-top: 8px;
+  font-family: var(--font-inter), sans-serif;
+  letter-spacing: 5px;
+  text-indent: 5px;
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--colorOutline);
+  animation: colorText var(--animDuration) ease-out infinite,
+    nudgeText var(--animDuration) ease-out infinite;
+  line-height: 1;
+}
+
+@media (min-width: 640px) {
+  .label {
+    margin-top: 10px;
+    font-size: 10.5px;
+    letter-spacing: 6px;
+    text-indent: 6px;
+  }
+}
+
+/* Animations (Bottom to Top / Inverted) */
+@keyframes colorSlide {
+  0% {
+    background-position: 0% 0%;
+  }
+  20% {
+    background-position: 0% 100%;
+  }
+  21% {
+    background-color: var(--colorOutlineFade);
+  }
+  29.99% {
+    background-color: var(--colorOutline);
+    background-position: 0% 100%;
+  }
+  30% {
+    background-color: var(--colorOutlineFade);
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 0% 100%;
+  }
+  51% {
+    background-color: var(--colorOutlineFade);
+  }
+  59% {
+    background-color: var(--colorOutline);
+    background-position: 0% 100%;
+  }
+  60% {
+    background-color: var(--colorOutlineFade);
+    background-position: 0% 0%;
+  }
+  80% {
+    background-position: 0% 100%;
+  }
+  81% {
+    background-color: var(--colorOutlineFade);
+  }
+  90%,
+  100% {
+    background-color: var(--colorOutline);
+  }
+}
+
+/* Trackball slides upwards from bottom to top */
+@keyframes trackBallSlide {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(calc(var(--posTrackball) * 1.2));
+  }
+  6% {
+    opacity: 1;
+    transform: scale(0.9) translateY(calc(-1 * var(--posTrackball) / 4));
+  }
+  14% {
+    opacity: 0;
+    transform: scale(var(--shrinkTrackball)) translateY(calc(-1 * var(--posTrackball) * 1.8));
+  }
+  15%,
+  19% {
+    opacity: 0;
+    transform: scale(var(--shrinkTrackball)) translateY(calc(var(--posTrackball) * 1.2));
+  }
+  28%,
+  29.99% {
+    opacity: 1;
+    transform: scale(1) translateY(calc(var(--posTrackball) * 1.2));
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1) translateY(calc(var(--posTrackball) * 1.2));
+  }
+  36% {
+    opacity: 1;
+    transform: scale(0.9) translateY(calc(-1 * var(--posTrackball) / 4));
+  }
+  44% {
+    opacity: 0;
+    transform: scale(var(--shrinkTrackball)) translateY(calc(-1 * var(--posTrackball) * 1.8));
+  }
+  45%,
+  49% {
+    opacity: 0;
+    transform: scale(var(--shrinkTrackball)) translateY(calc(var(--posTrackball) * 1.2));
+  }
+  58%,
+  59.99% {
+    opacity: 1;
+    transform: scale(1) translateY(calc(var(--posTrackball) * 1.2));
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1) translateY(calc(var(--posTrackball) * 1.2));
+  }
+  66% {
+    opacity: 1;
+    transform: scale(0.9) translateY(calc(-1 * var(--posTrackball) / 4));
+  }
+  74% {
+    opacity: 0;
+    transform: scale(var(--shrinkTrackball)) translateY(calc(-1 * var(--posTrackball) * 1.8));
+  }
+  75%,
+  79% {
+    opacity: 0;
+    transform: scale(var(--shrinkTrackball)) translateY(calc(var(--posTrackball) * 1.2));
+  }
+  88%,
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(calc(var(--posTrackball) * 1.2));
+  }
+}
+
+/* Mouse nudges upwards */
+@keyframes nudgeMouse {
+  0% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(calc(-1 * var(--posMouse)));
+  }
+  30% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(calc(-1 * var(--posMouse)));
+  }
+  60% {
+    transform: translateY(0);
+  }
+  80% {
+    transform: translateY(calc(-1 * var(--posMouse)));
+  }
+  90% {
+    transform: translateY(0);
+  }
+}
+
+/* Text nudges upwards */
+@keyframes nudgeText {
+  0% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(calc(-1 * var(--posText)));
+  }
+  30% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(calc(-1 * var(--posText)));
+  }
+  60% {
+    transform: translateY(0);
+  }
+  80% {
+    transform: translateY(calc(-1 * var(--posText)));
+  }
+  90% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes colorText {
+  0%, 20% {
+    color: var(--colorOutline);
+  }
+  21% {
+    color: var(--colorOutlineFade);
+  }
+  30% {
+    color: var(--colorOutline);
+  }
+  51% {
+    color: var(--colorOutlineFade);
+  }
+  60% {
+    color: var(--colorOutline);
+  }
+  81% {
+    color: var(--colorOutlineFade);
+  }
+  90%, 100% {
+    color: var(--colorOutline);
+  }
+}
