@@ -5,6 +5,7 @@ import { motion, useMotionValue, useSpring, useTransform, HTMLMotionProps } from
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import MouseScroll from "@/components/MouseScroll";
+import TelegramButton from "@/components/TelegramButton";
 
 function TiltCard({ 
   children, 
@@ -405,6 +406,7 @@ export default function Home() {
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
               </motion.div>
             </button>
+            <TelegramButton username="vulcaninternational" />
           </div>
         </TiltCard>
         <TiltCard 
@@ -455,6 +457,7 @@ export default function Home() {
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
               </motion.div>
             </button>
+            <TelegramButton username="vulcaninternational" />
           </div>
         </TiltCard>
         <TiltCard 
@@ -505,6 +508,7 @@ export default function Home() {
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
               </motion.div>
             </button>
+            <TelegramButton username="vulcaninternational" />
           </div>
         </TiltCard>
       </div>
@@ -526,7 +530,7 @@ export default function Home() {
           transition={logoTransition}
           src="/logos/Logo-Black.png" 
           alt="Vulcan Logo" 
-          className="h-6 sm:h-14 md:h-16 w-auto object-contain" 
+          className="h-10 sm:h-14 md:h-16 w-auto object-contain" 
         />
         <motion.div 
           layoutId="logo-text" 
