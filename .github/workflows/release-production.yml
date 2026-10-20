@@ -1,0 +1,124 @@
+name: Release on production
+
+on:
+  push:
+    branches:
+      - production
+
+permissions:
+  contents: read
+
+jobs:
+  prepare-release:
+    runs-on: ubuntu-latest
+    outputs:
+      should_release: ${{ steps.select_tag.outputs.should_release }}
+      tag: ${{ steps.select_tag.outputs.tag }}
+      version: ${{ steps.read_version.outputs.version }}
+    steps:
+      - name: Checkout repository (with tags)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+
+      - name: Setup pnpm from packageManager
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+          run_install: false
+
+      - name: Verify pnpm installation
+        run: pnpm --version
+
+      - name: Read version from package.json
+        id: read_version
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Select pushed release tag (v*)
+        id: select_tag
+        env:
+          EXPECTED_TAG: v${{ steps.read_version.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          mapfile -t pushed_commits < <(
+            jq -r '.commits[].id, .head_commit.id // empty' "$GITHUB_EVENT_PATH" \
+              | awk 'NF' \
+              | sort -u
+          )
+
+          if [ "${#pushed_commits[@]}" -eq 0 ]; then
+            echo "No pushed commits found in event payload."
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+            echo "tag=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          mapfile -t pushed_tags < <(
+            for commit in "${pushed_commits[@]}"; do
+              git tag --points-at "$commit" --list 'v*'
+            done | sort -u
+          )
+
+          if [ "${#pushed_tags[@]}" -eq 0 ]; then
+            echo "No v* tag found on pushed commits. Nothing to release."
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+            echo "tag=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          selected_tag=""
+          # Deterministic behavior when several tags are pushed:
+          # 1) prefer the tag matching package.json version (vX.Y.Z)
+          # 2) otherwise fallback to highest semver-like tag (sort -V)
+          if printf '%s\n' "${pushed_tags[@]}" | grep -qx "$EXPECTED_TAG"; then
+            selected_tag="$EXPECTED_TAG"
+          else
+            selected_tag="$(printf '%s\n' "${pushed_tags[@]}" | sort -V | tail -n 1)"
+          fi
+
+          {
+            echo "should_release=true"
+            echo "tag=$selected_tag"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo "### Production release selection"
+            echo "- Detected tags: $(printf '%s ' "${pushed_tags[@]}")"
+            echo "- Selected tag: $selected_tag"
+            echo "- Expected tag from package.json: $EXPECTED_TAG"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  publish-release:
+    if: ${{ needs.prepare-release.outputs.should_release == 'true' }}
+    needs: prepare-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Ensure selected tag matches package version
+        env:
+          TAG: ${{ needs.prepare-release.outputs.tag }}
+          VERSION: ${{ needs.prepare-release.outputs.version }}
+        run: |
+          expected_tag="v$VERSION"
+          if [ "$TAG" != "$expected_tag" ]; then
+            echo "Selected tag '$TAG' does not match package.json version '$expected_tag'." >&2
+            exit 1
+          fi
+
+      - name: Create or update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare-release.outputs.tag }}
+          name: ${{ needs.prepare-release.outputs.tag }}
+          generate_release_notes: true
+          make_latest: true
